@@ -1,4 +1,4 @@
-module lines
+module development
 
 go 1.21
 
