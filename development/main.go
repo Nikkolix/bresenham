@@ -16,23 +16,25 @@ import (
 )
 
 func main() {
-	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	/*img := image.NewRGBA(image.Rect(0, 0, 100, 100))
 	c := color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	BresenhamOptimized(5, 20, 90, 50, img, c)
 	BresenhamOptimized(10, 15, 95, 30, img, c)
-	SaveToPng(img, "final.png")
+	SaveToPng(img, "final.png")*/
 
 	for i := 16; i < 25; i++ {
 		fmt.Println(i, ":")
-		benchmark(1<<i, 1<<6, LineDraw, IncrementalLineDraw, BresenhamFloat, BresenhamOptimized, BresenhamSetRGBA)
+		//benchmark(1<<i, 1<<8, LineDraw, IncrementalLineDraw, BresenhamFloat, BresenhamOptimized, BresenhamSetRGBA)
+		benchmark(1<<i, 1<<8, BresenhamOptimized)
+		benchmarkCustomRGBA(1<<i, 1<<8, BresenhamOptimizedCustomRGBA)
 		fmt.Println("")
 	}
 
-	img = image.NewRGBA(image.Rect(0, 0, 100, 100))
+	/*img = image.NewRGBA(image.Rect(0, 0, 100, 100))
 	c = color.RGBA{R: 255, G: 0, B: 0, A: 255}
 	BresenhamOptimized(5, 20, 90, 50, img, c)
 	Wu(10, 15, 95, 30, c, img)
-	SaveToPng(img, "final.png")
+	SaveToPng(img, "final.png")*/
 }
 
 // BresenhamGif integer algorithm
@@ -65,6 +67,66 @@ func BresenhamGif(x1, y1, x2, y2 int, img *image.RGBA, c *color.RGBA) {
 	SaveToGif(images, "img.gif")
 }
 
+type CustomRGBA struct {
+	Pixel []uint32
+	W     int
+	H     int
+}
+
+func (i *CustomRGBA) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+func (i *CustomRGBA) Bounds() image.Rectangle {
+	return image.Rectangle{
+		Min: image.Point{
+			X: 0,
+			Y: 0,
+		},
+		Max: image.Point{
+			X: i.W,
+			Y: i.H,
+		},
+	}
+}
+
+func (i *CustomRGBA) At(x, y int) color.Color {
+	c := i.Pixel[x+y*i.W]
+	return color.RGBA{
+		R: uint8(c & 0b11111111),
+		G: uint8((c >> 8) & 0b11111111),
+		B: uint8((c >> 16) & 0b11111111),
+		A: uint8((c >> 24) & 0b11111111),
+	}
+}
+
+// BresenhamOptimized integer algorithm (optimized)
+func BresenhamOptimizedCustomRGBA(x1, y1, x2, y2 int, img *CustomRGBA, c uint32) {
+	iMod := [2]int{1, img.W + 1}
+
+	i := img.W*y1 + x1
+	img.Pixel[i] = c
+	end := img.W*y2 + x2
+	img.Pixel[end] = c
+
+	dx := x2 - x1
+	dy2 := (y2 - y1) << 1
+	dx2 := dx << 1
+	e := -dy2 + dx // e is negated
+
+	b := int(uint64(e) >> 63)
+	e += dx2*b - dy2
+	i += iMod[b]
+
+	for i < end {
+		b := int(uint64(e) >> 63)
+		img.Pixel[i] = c
+		e -= dy2
+		i += iMod[b]
+		e += dx2 * b
+	}
+}
+
 // BresenhamOptimized integer algorithm (optimized)
 func BresenhamOptimized(x1, y1, x2, y2 int, img *image.RGBA, c color.RGBA) {
 	i := img.PixOffset(x1, y1)
@@ -82,7 +144,7 @@ func BresenhamOptimized(x1, y1, x2, y2 int, img *image.RGBA, c color.RGBA) {
 	dx := x2 - x1
 	dy2 := (y2 - y1) << 1
 	dx2 := dx << 1
-	e := dy2 - dx // e is negated
+	e := -dy2 + dx // e is negated
 
 	b := int(uint64(e) >> 63)
 	i += 4 + b*img.Stride
@@ -108,7 +170,7 @@ func BresenhamSetRGBA(x1, y1, x2, y2 int, img *image.RGBA, c color.RGBA) {
 	x2--
 	dy2 := (y2 - y1) << 1
 	dx2 := dx << 1
-	e := dy2 - dx // e is negated
+	e := -dy2 + dx // e is negated
 	for x1 < x2 {
 		x1++
 		b := int(uint64(e) >> 63)
@@ -319,7 +381,45 @@ func benchmark(N int, res int, rasterizer ...func(x1, y1, x2, y2 int, img *image
 	fmt.Println(time.Now().Sub(start))
 }
 
-func SaveToPng(img *image.RGBA, filename string) {
+func benchmarkCustomRGBA(N int, res int, rasterizer ...func(x1, y1, x2, y2 int, img *CustomRGBA, c uint32)) {
+	start := time.Now()
+
+	for index := range rasterizer {
+		img := &CustomRGBA{
+			Pixel: make([]uint32, res*res),
+			W:     res,
+			H:     res,
+		}
+		s := time.Now()
+
+		for i := 0; i < N; i++ {
+			c := rand.Uint32() | (0b11111111 << 24)
+			r1 := rand.Intn(res)
+			r2 := rand.Intn(res)
+			r3 := rand.Intn(res)
+			r4 := rand.Intn(res)
+			x1 := min(r1, r2)
+			x2 := max(r1, r2)
+			y1 := min(r3, r4)
+			y2 := max(r3, r4)
+			dx := x2 - x1
+			dy := y2 - y1
+			if dx < dy {
+				y1, x1 = x1, y1
+				y2, x2 = x2, y2
+			}
+			rasterizer[index](x1, y1, x2, y2, img, c)
+		}
+
+		fmt.Println(runtime.FuncForPC(reflect.ValueOf(rasterizer[index]).Pointer()).Name(), time.Now().Sub(s).Milliseconds())
+		SaveToPng(img, runtime.FuncForPC(reflect.ValueOf(rasterizer[index]).Pointer()).Name()+".png")
+
+	}
+
+	fmt.Println(time.Now().Sub(start))
+}
+
+func SaveToPng(img image.Image, filename string) {
 	file, _ := os.Create(filename)
 	handle(png.Encode(file, img))
 	handle(file.Close())
