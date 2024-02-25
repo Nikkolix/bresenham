@@ -1,29 +1,62 @@
 package main
 
 import (
-	"github.com/bits-and-blooms/bitset"
+	"fmt"
 	"math"
 	"reflect"
 	"runtime"
 	"strings"
+
+	"github.com/bits-and-blooms/bitset"
 )
 
 func main() {
-	img := NewImage(100, 100)
+	img := NewImage(100, 40)
 	img.Clear(0xffffffff)
 	col := uint32(0xff0000ff)
-	BresenhamOptimized(5, 20, 90, 50, img, col)
-	BresenhamGif(10, 15, 95, 30, img, col)
+	BresenhamOptimized(5, 5, 90, 30, img, col)
+	BresenhamGif(10, 15, 95, 35, img, col)
 	img.SaveToPNG("out/bresenham.png")
 
 	GenerateCompareImage(BresenhamFloat, Bresenham)
 
-	img2 := NewImage(100, 100)
+	img2 := NewImage(100, 40)
 	img2.Clear(0xffffffff)
 	col2 := uint32(0xff0000ff)
-	BresenhamOptimized(5, 20, 90, 50, img2, col2)
-	Wu(10, 15, 95, 30, img2, col2)
+	BresenhamOptimized(5, 5, 90, 30, img2, col2)
+	Wu(10, 15, 95, 35, img2, col2)
 	img2.SaveToPNG("out/bresenham-wu.png")
+
+	img3 := NewImage(100, 100)
+	img3.Clear(0xffffffff)
+	col3 := uint32(0xff0000ff)
+	PrimitivLineDraw(5, 5, 90, 30, img3, col3)
+	PrimitivLineDraw(5, 5, 90, 60, img3, col3)
+	PrimitivLineDraw(5, 5, 90, 90, img3, col3)
+	PrimitivLineDraw(5, 5, 60, 90, img3, col3)
+	PrimitivLineDraw(5, 5, 30, 90, img3, col3)
+	img3.SaveToPNG("out/line-draw-show.png")
+
+	img4 := NewImage(100, 40)
+	img4.Clear(0xffffffff)
+	col4 := uint32(0xff0000ff)
+	BresenhamOptimized(5, 5, 90, 30, img4, col4)
+	BresenhamOptimizedGCD(10, 15, 95, 35, img4, col4)
+	img4.SaveToPNG("out/gcd.png")
+
+	img5 := NewImage(100, 40)
+	img5.Clear(0xffffffff)
+	col5 := uint32(0xff0000ff)
+	BresenhamOptimized(5, 5, 90, 30, img5, col5)
+	BresenhamOptimizedGCDMirror(10, 15, 95, 35, img5, col5)
+	img5.SaveToPNG("out/gcd-mirror.png")
+
+	img6 := NewImage(100, 40)
+	img6.Clear(0xffffffff)
+	col6 := uint32(0xff0000ff)
+	BresenhamOptimized(5, 5, 90, 30, img6, col6)
+	BresenhamOptimizedGCDMirrorBitset(10, 15, 95, 35, img6, col6)
+	img6.SaveToPNG("out/gcd-mirror-bitset.png")
 }
 
 func GenerateCompareImage(alg1, alg2 func(x1, y1, x2, y2 int, img *Image, c uint32)) {
@@ -153,9 +186,11 @@ func BresenhamOptimizedGCDMirrorBitset(x1, y1, x2, y2 int, img *Image, c uint32)
 			img.Pixel[index] = c
 		}
 	}
+
+	fmt.Println(bits.DumpAsBits(), "  ", bits.Len())
 }
 
-// BresenhamOptimizedGCDMirror integer algorithm (optimized)
+// BresenhamOptimizedGCDMirrorExp integer algorithm (optimized experimental)
 func BresenhamOptimizedGCDMirrorExp(x1, y1, x2, y2 int, img *Image, c uint32) {
 	dx := x2 - x1
 	dy := y2 - y1
@@ -256,6 +291,8 @@ func BresenhamOptimizedGCDMirrorExp(x1, y1, x2, y2 int, img *Image, c uint32) {
 
 // BresenhamOptimizedGCDMirror integer algorithm (optimized)
 func BresenhamOptimizedGCDMirror(x1, y1, x2, y2 int, img *Image, c uint32) {
+	gif := NewGif()
+
 	dx := x2 - x1
 	dy := y2 - y1
 
@@ -332,6 +369,7 @@ func BresenhamOptimizedGCDMirror(x1, y1, x2, y2 int, img *Image, c uint32) {
 			i += iMod[b]
 			end -= iMod[z]
 			e += dx2 * b
+			gif.AppendImage(img)
 		}
 	} else {
 		for i <= end {
@@ -344,14 +382,19 @@ func BresenhamOptimizedGCDMirror(x1, y1, x2, y2 int, img *Image, c uint32) {
 			i += iMod[b]
 			end -= iMod[z]
 			e += dx2 * b
+			gif.AppendImage(img)
 		}
 	}
+
+	gif.Save("out/gcd-mirror.gif")
 }
 
 // BresenhamOptimizedGCD integer algorithm (optimized)
 func BresenhamOptimizedGCD(x1, y1, x2, y2 int, img *Image, c uint32) {
 	dx := x2 - x1
 	dy := y2 - y1
+
+	gif := NewGif()
 
 	if dx == 0 {
 		return
@@ -411,6 +454,8 @@ func BresenhamOptimizedGCD(x1, y1, x2, y2 int, img *Image, c uint32) {
 			e += ndy2
 			i += iMod[b]
 			e += dx2 * b
+
+			gif.AppendImage(img)
 		}
 	} else {
 		for i < end {
@@ -421,8 +466,11 @@ func BresenhamOptimizedGCD(x1, y1, x2, y2 int, img *Image, c uint32) {
 			i += iMod[b]
 			e += dx2 * b
 
+			gif.AppendImage(img)
 		}
 	}
+
+	gif.Save("out/gcd.gif")
 }
 
 // BresenhamOptimized integer algorithm (optimized)
@@ -436,18 +484,18 @@ func BresenhamOptimized(x1, y1, x2, y2 int, img *Image, c uint32) {
 
 	dx := x2 - x1
 	dy := y2 - y1
-	ndy2 := -(dy << 1) // negated
+	dy2 := dy << 1
 	dx2 := dx << 1
-	e := ndy2 + dx // e is negated
+	e := dx - dy2 // e is negated
 
 	b := int(uint64(e) >> 63)
-	e += dx2*b + ndy2
+	e += dx2*b - dy2
 	i += iMod[b]
 
 	for i < end {
 		b := int(uint64(e) >> 63)
 		img.Pixel[i] = c
-		e += ndy2
+		e -= dy2
 		i += iMod[b]
 		e += dx2 * b
 	}
@@ -504,8 +552,8 @@ func IncrementalLineDraw(x1, y1, x2, y2 int, img *Image, c uint32) {
 	}
 }
 
-// LineDraw algorithm
-func LineDraw(x1, y1, x2, y2 int, img *Image, c uint32) {
+// PrimitivLineDraw algorithm
+func PrimitivLineDraw(x1, y1, x2, y2 int, img *Image, c uint32) {
 	dx := x2 - x1
 	dy := y2 - y1
 	slope := float64(dy) / float64(dx)

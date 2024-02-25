@@ -6,261 +6,554 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
         <!--<link rel="stylesheet" href="styles/main.37ab405b.css">-->
 <body>
+
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an 
     <strong>outdated</strong> browser. Please 
     <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
 </p>
 <![endif]-->
-<div class="container">
+
+<div class="container" style="text-align: justify;">
 
     <nav class="navbar">
         <div class="container">
             <ul class="navbar-list">
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#intro">Intro</a>
+                    <a class="navbar-link" href="#title">Titel</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#images">Images</a>
+                    <a class="navbar-link" href="#intro">Einführung</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#tables">Tables</a>
+                    <a class="navbar-link" href="#theory">Theorie</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#code">Code</a>
+                    <a class="navbar-link" href="#algorithm">Algorithmus</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#math">Math</a>
+                    <a class="navbar-link" href="#antialiasing">Antialiasing</a>
                 </li>
                 <li class="navbar-item">
-                    <a class="navbar-link" href="#references">References</a>
+                    <a class="navbar-link" href="#implementation">Implementierung</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="navbar-link" href="#results">Ergebnisse</a>
                 </li>
             </ul>
         </div>
     </nav>
 
-    <section class="header" id="intro">
-        <h2 class="title">Project Title</h2>
-        <h6>Project by Albert Einstein (<a href="mailto:albert.einstein@mailbox.tu-berlin.de">albert.einstein@mailbox.tu-berlin.de</a>)
+    <section class="header" id="title">
+        <h2 class="title">Rasterisierung: Bresenham Algorithmus</h2>
+        <h6>Project von Niklas Markus Keitsch 
+            (<a href="mailto:keitsch@campus.tu-berlin.de">keitsch@campus.tu-berlin.de</a>)
         </h6>
 
         <div class="row">
-<!--            <div class="one column category" style="text-align: center;">-->
-<!--                <h5 class="docs-header">Teaser Image</h5>-->
-                <img class="u-max-full-width" src="images/teaser.jpg">
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata.</p>
+            <img class="u-max-full-width" src="images/img.gif" style="transform: scaleY(-1); width: 100%; image-rendering: pixelated;">
+            <p>Output des Bresenham-Algorithmus, Schrittweise visualisiert (Quelle: Eigene Implementierung)</p>
         </div>
     </section>
 
+    <div class="docs-section" id="intro">
+        
+        <h3 class="section-heading">Einführung und Motivation</h3>
+        <p class="section-description">
+            Diese Dokumentation führt zunächst die Begriffe Rasterisierung und Bresenham-Algorithmus ein und erläutert deren Bedeutung in der Computergrafik.
+            Anschließend wird die Motivation für die Implementierung des Bresenham-Algorithmus erläutert.
+            Daraufhin wird die Theorie des Algorithmus vorgestellt und auf besondere Implementierungsdetails eingegangen.
+            Abschließend werden die Ergebnisse präsentiert und diskutiert.
+        </p>
 
-    <div class="docs-section" id="images">
-        <h3 class="section-heading">Images</h3>
-        <p class="section-description">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+        <h5>Rasterisierung</h5>
+        <p class="section-description">
+            Um Grafiken auf einem Bildschirm oder einer Druckseite darzustellen, müssen geometrische Formen,
+            die durch mathematische Modelle definiert sind,
+            in diskrete Bildpunkte (Pixel) umgewandelt werden.
+            Diese Umwandlung wird als Rasterisierung bezeichnet.
+            Sie ist ein wichtiger Schritt in der Computergrafik
+            und wird in vielen Anwendungen eingesetzt, darunter Spieleentwicklung,
+            Bildverarbeitung und Computer Aided Design (CAD).
+        </p>
 
-        <h5>Images in columns</h5>
+        <h5>Bresenham-Algorithmus</h5>
+        <p class="section-description">
+            Der Bresenham-Algorithmus ist ein algorithmisches Verfahren,
+            das von Jack E. Bresenham im Jahr 1962 entwickelt wurde,
+            um Linien effizient in diskrete Bildpunkte zu überführen.
+            Somit ist er eine Methode zur Rasterisierung von Linien.
+            Welche Eigenschaft den Algorithmus besonders Effizient macht,
+            wird im Folgenden erläutert.
+        </p>
 
-        <div class="row">
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Image 1</h5>
-                <img class="u-max-full-width" src="images/empty.jpg">
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+    </div>
+
+    <div class="docs-section" id="theory">
+        
+        <h3 class="section-heading">Theoretischer Hintergrund</h3>
+
+        <h5>Grunddefinitionen</h5>
+        <p class="section-description">
+            Die Rasterisierung geschieht wie schon erklärt in diskreten Bildpunkten, den Pixeln.
+            Diese sind in einem Raster, einem zweidimensionalen Koordinatensystem, angeordnet.
+            Die Koordinaten eines Pixels werden durch die x- und y-Koordinaten des Rasters definiert.
+            Dabei liegt der Mittelpunkt eines Pixels auf den ganzzahligen Koordinaten \((x, y)\).
+            Ein Pixel ist hier ein Quadrat mit einer Kantenlänge von 1. Andere Raster sind in der Theorie denkbar,
+            jedoch hier nicht betrachtet.
+            Eine zu rasterisierende Linie wird durch zwei Punkte definiert, einen Start- und einen Endpunkt.
+            Die Koordinaten dieser Punkte werden hier als \((x_0, y_0)\) und \((x_1, y_1)\) bezeichnet.
+            Im Folgenden wird vereinfachend zunächst davon ausgegangen, dass der Startpunkt links des Endpunktes liegt: \(x_0 < x_1\).
+            Dies ist jedoch keine Einschränkung, wie später gezeigt wird.
+            Die Linie kann mathematisch auch durch die Steigung \(m\) und den y-Achsenabschnitt \(b\) definiert werden.
+            Als Eingabe bekommen nachfolgende Algorithmen die Koordinaten der Start- und Endpunkte.
+            Farbe und Auflösung des Rasters sind weitere Eingabeparameter, die hier jedoch nicht gesondert betrachtet werden.
+            Die Linien werden hier auch nicht mit variabler Dicke betrachtet.
+        </p>
+        
+        <h5>2D vs 3D</h5>
+        <p class="section-description">
+            Hier wird nur die Rasterisierung von Linien in 2D betrachtet.
+            Andere Formen wie Kreise, Ellipsen und Polygone können ebenfalls gerastert werden, werden hier jedoch nicht betrachtet. 
+            Die Rasterisierung von Flächen in 3D ist ein komplexeres Problem, welches Projektionen
+            und weitere Methoden benötigt und wird hier nicht betrachtet.
+            Es gibt den Bresenham-Algorithmus auch in einer 3D-Variante, die hier jedoch nur erwähnt werden soll.
+        </p> 
+
+        <h5>Primitive Grundidee</h5>
+        <p class="section-description">
+            Um eine Linie zu zeichnen, müssen die Bildpunkte bestimmt werden, die von der Linie überdeckt werden.
+            Die Grundidee hierbei ist die Iteration vom Start- zum Endpunkt über die x-Achse. Die einfachste Methode
+            um so eine Linie zu zeichnen, wäre die Verwendung der Geradengleichung \(y = m \cdot x + b\). Hierbei wird für jeden x-Wert
+            der y-Wert berechnet, gerundet und der entsprechende Pixel gesetzt.
+        </p>
+
+        <h5>Folgeprobleme</h5>
+        <div class="row" style="width: 100%;">
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <img class="u-max-full-width" src="images/line-draw-show.png" style="transform: scaleY(-1); width: 50%; image-rendering: pixelated;">
             </div>
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Image 2</h5>
-                <img class="u-max-full-width" src="images/empty.jpg">
-                    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <p>Output des primitiven Algorithmus mit verschiedenen Steigungen (Quelle: Eigene Implementierung)</p>
             </div>
         </div>
+        <p class="section-description">
+            Durch die Verwendung der Geradengleichung entstehen jedoch zwei Probleme.
+            Zum einen entstehen Lücken in der Linie, wenn die Steigung der Linie größer als 1 ist.
+            Dieses Problem wird in der Abbildung verdeutlicht.
+            Zum anderen ist die Berechnung der y-Werte für jeden x-Wert sehr rechenintensiv.
+        </p>
 
-        <div class="row">
-            <div class="one-third column category" style="text-align: center;">
-                <h5 class="docs-header">Bunny</h5>
-                <img class="u-max-full-width" src="images/empty.jpg">
-                <p>An empty image.</p>
+        <h5>Beschränkung</h5>
+        <p class="section-description">
+            Um erstem Problem zu entgehen, wird die Steigung \(m\) der Linie auf Werte zwischen 0 und 1 beschränkt.
+            Diese Beschränkung wird später durch andere Methoden aufgehoben, um auch Linien mit einer Steigung größer als 1 und kleiner als 0 zu zeichnen.
+            Die Lücken in der Linie entstehen, da über die x-Achse iteriert wird und für jeden x-Wert nur ein y-Wert berechnet wird
+            und somit auch nur ein Pixel gezeichnet wird. Bei einer Steigung größer als 1, wird der y-Wert bei einer x-Iteration jedoch um
+            mehr als 1 erhöht. Es müssten also mehrere Pixel mit dem selben x-Wert gezeichnet werden um eine kontinuierliche Linie zu zeichnen.
+            Mit einer Steigung im Intervall von 0 bis 1 wird der y-Wert in einer x-Iteration jedoch nur um höchstens 1 erhöht, wodurch keine Lücken entstehen.
+            So kann als Folge aus der Beschränkung der Steigung die Eigenschaft gewonnen werden, dass der in der nächsten x-Iteration gezeichnete Pixel nur auf der gleichen Höhe
+            oder einen Pixel über dem vorherigen liegt.
+        </p>
+
+        <h5>Effizienzverbesserung: Inkrementeller Ansatz</h5>
+        <p class="section-description">
+            <b>Idee:</b>
+            Im ersten primitiven Ansatz wird für jeden x-Wert der entsprechende y-Wert berechnet und gerundet:
+            <code>y = round(m*x+b)</code>. Stattdessen könnte der y-Wert anfangs auf den y-Wert des Startpunktes initialisiert werden: <code>y = y0</code>.
+            In jeder x-Iteration wird der y-Wert um die Steigung erhöht: <code>y = y + m</code>. Der gerundete y-Wert wird dann als y-Wert für den zu zeichnenden Pixel verwendet: <code>draw(x,round(y))</code>.
+            <br>
+            <br>
+            <b>Motivation:</b>
+            Die Berechnung des y-Wertes für jeden x-Wert mithilfe der Geradengleichung ist sehr rechenintensiv.
+            Durch die Verwendung der Steigung \(m\) als Inkrement für den y-Wert,
+            kann die Floating-Point-Multiplikation <code>m*x</code> für jeden Schritt mit einer effizienteren Addition ersetzt werden.
+            Zudem fällt die Addition mit der Konstante \(b\) durch die Initialisierung weg.
+        </p>
+
+    </div>
+
+    <div class="docs-section" id="algorithm">
+        
+        <h3 class="section-heading">Bresenham Algorithmus</h3>
+
+        <p class="section-description">
+            Nach dem theoretischen Hintergrund zu Rasterisierung von Linien folgt nun der Schritt zum eigentlichen Bresenham-Algorithmus.
+            Dieser wird in den folgenden Abschnitten in seiner Ursprungsform und einer effizienteren Integer-Variante vorgestellt.
+        </p>
+        
+        <h5>Floating-Point-Bresenham</h5>
+        <p class="section-description">
+            <b>Idee:</b>
+            Anstelle der Berechnung des y-Wertes für jeden x-Wert,
+            wird der y-Wert anfangs, wie beim inkrementellen Verfahren auf den y-Wert des Startpunktes initialisiert.
+            Hierbei ist der y-Wert jedoch nicht als Float gespeichert, sondern als Integer. Mithilfe vorherig beobachteter
+            Eigenschaft, dass der in der nächsten x-Iteration gezeichnete Pixel nur auf der gleichen Höhe oder einen Pixel über dem vorherigen liegt, 
+            kann der y-Wert nun in jeder x-Iteration um 1 erhöht oder nicht verändert werden.
+            <br>
+            Um zu entscheiden, ob der y-Wert erhöht wird,
+            wird ein Fehlerterm \(E\) als Float eingeführt. Anfangs wird dieser Fehlerterm
+            mit <code>E = m - 0.5</code> initialisiert.
+            Dieser kann als y-Abstand vom oberen Pixelrand zum Punkt der Linie mit gleichem x-Wert visualisiert und verstanden werden.
+            Somit kann mittels Fehlerterm entschieden werden, ob der y-Wert erhöht wird: 
+            <br>
+            Falls \(E > 0\), wird der y-Wert um 1 erhöht, da die Linie eher durch den oberen Pixel verläuft.
+            Da der y-Wert nun um 1 erhört wurde, muss der Fehlerwert um 1 verringert werden: <code>E--</code>, damit weiterhin in Abhängigkeit zur 0 entschieden werden kann.
+            <br>
+            Falls \(E < 0\), wird der y-Wert nicht verändert, da die Linie eher durch den Pixel auf gleicher Höhe verläuft.
+            <br>
+            Falls \(E = 0\), liegt die Linie genau auf dem Pixelrand, im Original-Algorithmus wird hier auch der y-Wert nicht verändert,
+            und somit der Pixel auf gleicher Höhe bevorzugt, andere Varianten zeichnen den oberen oder beide Pixel.
+            <br>
+            In jeder x-Iteration wird der Fehlerterm um die Steigung erhöht: <code>E = E + m</code>. Dies geschieht,
+            da die Steigung \(m\) die Änderung des y-Wertes in Abhängigkeit zur x-Iteration beschreibt
+            und somit der Fehlerterm stets konsistent für den nächsten x-Wert angepasst wird.
+            <div class="row" style="width: 100%;">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <img class="u-max-full-width" src="images/Bild1.png" style="width: 50%; image-rendering: pixelated;">
                 </div>
-
-                <div class="one-third column category" style="text-align: center;">
-                <h5 class="docs-header">Superbunny</h5>
-                <img class="u-max-full-width" src="images/empty.jpg">
-                <p>An second empty image.</p>
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <p>Visualisierung der Fehlervariable E (grün) in jeder x-Iteration (Quelle: Eigene PowerPoint Grafik)</p>
                 </div>
-
-                <div class="one-third column category" style="text-align: center;">
-                <h5 class="docs-header">Megabunny</h5>
-                <img class="u-max-full-width" src="images/empty.jpg">
-                <p>A super empty image.</p>
             </div>
-        </div>
+            <br>
+            <br>
+            <b>C-Pseudo-Code:</b>
+            <br>
+            <pre>
+            <code>
+            void drawLine(int x0, int y0, int x1, int y1) {
+                int dx = x1 - x0;
+                int dy = y1 - y0;
+                float m = (float)dy / (float)dx;
+                float E = m - 0.5;
+                int y = y0;
+                for (int x = x0; x <= x1; x++) {
+                    draw(x, y);
+                    if (E > 0) {
+                        y++;
+                        E--;
+                    }
+                    E = E + m;
+                }
+            }
+            </code>
+            </pre>
 
-        <h5>Text and Images</h5>
+            <br>
+            <br>
+            <b>Motivation:</b>
+            Der Floating-Point-Bresenham-Algorithmus benutzt die Vorteile des inkrementellen Ansatzes und erweitert diesen
+            um die Reduzierung der Rundung von y, da y als Integer gespeichert wird. Als Zwischenschritt zum Integer-Bresenham-Algorithmus
+            ist der Floating-Point-Bresenham-Algorithmus jedoch nicht sehr effizient, da die Floating-Point-Operationen auf die
+            neue Fehlervariable \(E\) übergegangen sind und zusätzlich eine Verzweigung in der Schleife dazukommt.
+            Um den folgenden Integer-Bresenham-Algorithmus zu verstehen, ist es jedoch wichtig, den Floating-Point-Bresenham-Algorithmus zu kennen und einmal 
+            hergeleitet zu haben.
 
-        <div class="u-pull-right" style="text-align: center; width:300px; margin-left:20px">
-            <h5 id="figure2" class="docs-header">Figure 2</h5>
-            <img class="u-max-full-width" src="images/empty.jpg">
-            <p>I shall not write fancy figure descriptions. I shall not write fancy image descriptions. I shall not write fancy graph descriptions.</p>
-        </div>
+            <br>
+            <br>
+            <b>Beschränkungen:</b>
+            Aus der Wahl y als Integer zu speichern, ergibt sich die neue Beschränkung, dass der Start- und Endpunkt der Linie
+            nur ganzzahlige Werte haben dürfen. Um auch Linien mit nicht ganzzahligen Start- und Endpunkten zu zeichnen, müssten
+            diese entweder gerundet werden, woraus Ungenauigkeiten entstehen, oder der Algorithmus müsste durch zusätzliche Anpassungen
+            der Fehlervariable angepasst werden, auf die hier jedoch nicht weiter eingegangen wird.
 
-        <p>
-            This text can float around <a href="#figure2">figure 2</a>.
-            It can also contain linebreaks and new paragraphs.<br>
-            This is how a linebreak looks.
         </p>
-        <p>
-           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+        <h5>Integer-Bresenham</h5>
+        <p class="section-description">
+            <b>Idee:</b>
+            Die bisherigen Ideen des Floating-Point-Bresenham-Algorithmus werden in den Integer-Bresenham-Algorithmus übertragen.
+            Jedoch wird die Fehlervariable \(E\) nicht als Float, sondern als Integer gespeichert. Um dies zu ermöglichen, wird ein
+            kleiner Rechentrick angewandt:
+            <br>
+            Die Fehlervariable \(E\) wird mit \(2dx\) multipliziert. Da die Steigung \(m\) als \(dy/dx\) definiert ist, folgt nun:
+            <br>
+            <code>E = m - 0.5</code> wird zu <code>E = 2dy - dx</code>
+            <br>
+            <code>E = E - 1</code> wird zu <code>E = E - 2dx</code>
+            <br>
+            <code>E = E + m</code> wird zu <code>E = E + 2dy</code>
+            <br>
+            Diese Umformung verändern den Nutzen der Fehlervariable nicht. Da \(2dx\) stets positiv ist, 
+            ist \(E\) relativ zur 0 immer noch konsistent und kann weiterhin entscheiden, ob der y-Wert erhöht wird.
+            Der Fehlerwert ist jetzt jedoch nicht mehr genau der vorher beschriebene y-Abstand, sondern ein Vielfaches davon.
+            Er kann jedoch immer noch als oszillierender Wert visualisiert werden. Der Rest des Algorithmus bleibt unverändert.
+
+            <div class="row" style="width: 100%;">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <img class="u-max-full-width" src="images/Bild2.png" style="width: 50%; image-rendering: pixelated;">
+                </div>
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <p>Beispiel für oszillierenden Wert von E (grün) in jeder x-Iteration (Quelle: Eigene PowerPoint Grafik)</p>
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <b>Eigenschaften von E:</b>
+            Der Fehlerterm \(E\) ist nach unten und oben hin beschränkt. Da für \(E > 0\) gilt, dass 
+            \(E = E + 2dy - 2dx\) und wegen \(0 \leq m \leq 1\) auch \(2dy \leq 2dx\) gelten muss und für \(E \leq 0\) \(E\) nur erhöht wird,
+            kann \(E\) nur wenigstens \(-2dx\) sein. Andersherum kann \(E\) maximal \(2dy\) sein. Mithilfe dieser Beobachtungen kann 
+            ein passender Integer-Typ für \(E\) gewählt werden, um Überlauf zu vermeiden.
+
+            <br>
+            <br>
+            <b>C-Pseudo-Code:</b>
+            <pre>
+            <code>
+            void drawLine(int x0, int y0, int x1, int y1) {
+                int dx = x1 - x0;
+                int dy = y1 - y0;
+                int E = 2*dy - dx;
+                int y = y0;
+                for (int x = x0; x <= x1; x++) {
+                    draw(x, y);
+                    if (E > 0) {
+                        y++;
+                        E = E - 2*dx;
+                    }
+                    E = E + 2*dy;
+                }
+            }
+            </code>
+            </pre>
+
+            <br>
+            <br>
+            <b>Motivation:</b>
+            Der Integer-Bresenham-Algorithmus ist effizienter als der Floating-Point-Bresenham-Algorithmus, da die Floating-Point-Operationen
+            völlig entfallen. Es wird nur noch auf Integer-Operationen zurückgegriffen. 
         </p>
 
-        <p>
-           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamneses voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata ita sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamneses voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata ita sanctus est Lorem ipsum dolor sit amet.
-        </p>
 
-        <h5>Moving Images aka Videos</h5>
-
-        <div class="row">
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Voronoi Generation</h5>
-                <video class="u-max-full-width" controls>
-                    <source src="videos/voronoi.ogg" type="video/ogg">
-                    Your browser does not support the video tag.
-                </video>
-                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamneses voluptua.</p>
+        <h5>Aufhebung der Beschränkungen</h5>
+        <p class="section-description">
+            <b>Ziel:</b>
+            Die Beschränkung, der Steigung sowie der relativen Position von Start- und Endpunkt soll aufgehoben werden.
+            Somit sollen nun jegliche Linien mit ganzzahligen Start- und Endpunkten gezeichnet werden können.
+            <br>
+            <br>
+            <b>Methode:</b>
+            <div class="row" style="width: 100%;">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <img class="u-max-full-width" src="images/Bild3.png" style="width: 50%; image-rendering: pixelated;">
+                </div>
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <p>Methoden zur Aufhebung der Beschränkung, \(x0,y0\) liegt im Ursprung (Quelle: Eigene PowerPoint Grafik, mit <a href="https://de.wikipedia.org/wiki/Datei:Line_drawing_symmetry.svg">"Line_drawing_symmetry"</a>)</p>
+                </div>
             </div>
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Voronoi Generation</h5>
-                <video class="u-max-full-width" controls>
-                    <source src="videos/voronoi.ogg" type="video/ogg">
-                    Your browser does not support the video tag.
-                </video>
-                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diamneses voluptua.</p>
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="docs-section" id="tables">
-        <h3 class="section-heading">Tables</h3>
-        <p class="section-description">At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata ita sanctus est Lorem ipsum dolor sit amet.</p>
-        <div class="row">
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Table 1</h5>
-                <table class="u-full-width">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Value</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Laplace</td>
-                            <td>26</td>
-                            <td>---</td>
-                        </tr>
-                        <tr>
-                            <td>Beltrami</td>
-                            <td>42</td>
-                            <td>n/a</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="one-half column category" style="text-align: center;">
-                <h5 class="docs-header">Table 2</h5>
-                <table class="u-full-width">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Value</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Laplace</td>
-                            <td>26</td>
-                            <td>---</td>
-                        </tr>
-                        <tr>
-                            <td>Beltrami</td>
-                            <td>42</td>
-                            <td>n/a</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="one-half column category">
-                <h5 class="docs-header">Unordered Lists</h5>
-                <ul>
-                    <li>Unordered lists have basic styles</li>
-                    <li>
-                      They use the circle list style
-                      <ul>
-                        <li>Nested lists styled to feel right</li>
-                        <li>Can nest either type of list into the other</li>
-                      </ul>
-                    </li>
-                </ul>
-            </div>
-            <div class="one-half column category">
-                <h5 class="docs-header">Ordered Lists</h5>
-                <ol>
-                    <li>Ordered lists also have basic styles</li>
-                    <li>
-                      They use the decimal list style
-                      <ul>
-                        <li>Ordered and unordered can be nested</li>
-                      </ul>
-                    </li>
-                    <li>Last list item just for the fun</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-
-    <div class="docs-section" id="code">
-        <h3 class="section-heading">Code</h3>
-        <p class="section-description">At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata ita sanctus est Lorem ipsum dolor sit amet.</p>
-        <pre>
-            <code>def load_image(nr, flat=True):
-    img = io.imread(get_path(nr), as_grey=True)
-    if flat:
-        # print(img.shape)
-        img = img.reshape(-1)
-        # print(np.amin(img), np.amax(img))
-    print("Loaded img " + str(nr))
-    return img
-</code>
-        </pre>
-        <p>
-            Inline code snippets <code>are also possible</code> as this beautiful <code>super code i++; 0x34</code> shows.
-        </p>
-    </div>
-
-    <div class="docs-section" id="math">
-        <h3 class="section-heading">Math</h3>
-        <p class="section-description">Mathematic formulations such as \(f(x) = 3 \cdot x + \epsilon \cdot y\) are powered by MathJax <a href="#2">[2]</a>. They can be written (amongst other possibilities) in \(\LaTeX\) notation. Besides in-line mathematics, displayed equations are possible:
-\[\nabla \times H = J_c + \frac{\partial D}{\partial t}\]
+            Der Basisfall ist der Bisher betrachtete Fall, der Startpunkt liegt links des Endpunktes und die Steigung ist im Intervall von 0 bis 1.
+            Dieser Fall wird im Integer-Bresenham-Algorithmus abgedeckt.
+            <br>
+            Um auch Linien mit der Steigung im Intervall von -1 bis 0 zu zeichnen wird y nicht wie vorher um 1 erhöht, sondern um 1 verringert.
+            Für dy wird der absolute Wert genommen. Der Fehlerterm bleibt unverändert. Dies simmuliert die Spiegelung der Linie in der obigen Grafik an der x-Achse.
+            Es gilt hierbei, dass x0 < x1.
+            Dies entspricht dem "Dekrementieren"-Fall der Grafik.
+            <br>
+            Um Linien mit einer Steigung größer als 1 zu zeichnen, wird die Rolle von x und y im Algorithmus vertauscht.
+            Die Linie wird also in y-Richtung gezeichnet und nicht in x-Richtung. x wird nun in Abhängigkeit von E erhöht.
+            Dadurch wird die Linie in der Grafik an der Geraden y=x gespiegelt.
+            Es gilt hierbei, dass y0 < y1.
+            Dies entspricht dem "x-y-Tausch"-Fall der Grafik.
+            <br>
+            Der Fall "x-y-Tausch & Dekrementieren" ist die Kombination aus beiden Fällen, sodass über y-Iteriert wird und
+            x in Abhöngigkeit von E verringert wird. Es gilt hierbei auch, dass y0 < y1.
+            <br>
+            Die restlichen Fälle können durch das einfache Vertauschen von Start- und Endpunkt mit den bisherigen Fälle abgedeckt werden.
+            Beim Vertauschen von Start- und Endpunkt wird die Linie in der Grafik an der Geraden y=-x gespiegelt.
+            Die rasterierte Linie verändert sich durch vertauschen von Start- und Endpunkt nicht.
+            <br>
+            <br>
+            <b>Ergebnis:</b>
+            Diese Methoden können leicht in den Integer-Bresenham-Algorithmus integriert werden, um die Beschränkungen aufzuheben. Die Implementierung
+            kann in mehrere Funktionen aufgeteilt werden oder elegant in den Algorithmus integriert werden, wird jedoch hier nicht weiter betrachtet.
         </p>
     </div>
 
-    <div class="docs-section" id="references">
-        <h3 class="section-heading">References</h3>
-        <ul class="popover-list">
-            <li class="popover-item" id="1">
-                <!--A link to this may look like: <a href="#1">[1]</a>-->
-                [1] Einstein, A. et al., The problem of space, ether and the field in physics, <i>Man and the universe, 1947</i>.
-            </li>
-          
-            <li class="popover-item" id="2">
-                [2] MathJax, <a href="https://www.mathjax.org">https://www.mathjax.org</a>, last retrieved 09-2015
-            </li>
-            
-        </ul>
+    <div class="docs-section" id="antialiasing">
+        
+        <h3 class="section-heading">Antialiasing</h3>
+        <div class="row" style="width: 100%;">
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <img class="u-max-full-width" src="images/bresenham-wu.gif" style="transform: scaleY(-1); width: 100%; image-rendering: pixelated;">
+            </div>
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <p>Output des Algorithmus von Xiaolin Wu, Schrittweise visualisiert (Quelle: Eigene Implementierung)</p>
+            </div>
+        </div>
+
+        <p class="section-description">
+            Die Linien, die durch die bisher genananten Algorithmen gezeichnet werden, sind scharfkantig und wirken pixelig.
+            Um die Linien weicher und realistischer wirken zu lassen, kann Antialiasing angewandt werden.
+            Antialiasing ist eine Methode, um die Kanten von Linien und Flächen weicher zu machen, indem die Farbe der Kantenpixel
+            anhand der Überdeckung mit dem Pixel bestimmt wird. Man spricht hierbei auch von Kantenglättung.
+            <br>
+            Eine Methode zur Kantenglättung ist das Wu-Verfahren, welches von Xiaolin Wu 1991 entwickelt wurde. Vereinfachend kann gesagt
+            werden, dass die Linie immer 2 Pixel breit gezeichnet wird und die Deckkraft der Farbe der Pixel anhand der Überdeckung (abhängig vom Abstand) mit der Linie bestimmt wird.
+            Weitergehende Erklärungen des Wu-Verfahrens werden hier jedoch nicht betrachtet.
+        </p>
+
+    </div>
+
+    <div class="docs-section" id="implementation">
+        
+        <h3 class="section-heading">Implementierung</h3>
+        
+        <h5>Generelle Implementierung</h5>
+        <p class="section-description">
+            Die Algorithmen wurde in der Programmiersprache Golang und getestet.
+            Die Implementierung ist in der Datei <a href="./../../development/main.go">main.go</a> zu finden.
+            Weitere nebensächliche Implementierungen sind in den Dateien <a href="./../../development/benchmark.go">benchmark.go</a>, <a href="./../../development/helper.go">helper.go</a> und <a href="./../../development/image.go">image.go</a> zu finden.
+            Benutzt wurde die IDE Goland von JetBrains, das Performance Analyse Tool VTune von Intel sowie der Compiler Explorer.
+            Folgende angaben zur Performance der Implementierungen sind meist hier nicht mit Zahlen belegt, da
+            diese zum Teil leicht variierten und aus zeitgründen nicht weiter verfolgt werden konnten. Da diese Zahlen je nach System
+            sehr schwanken, wird hier nur auf die grobe Performance eingegangen, ich sie wahrnehmen konnte.
+        </p>
+
+        <h5>C Implementierung</h5>
+        <p class="section-description">
+            Eine Implementierung des Integer-Bresenham-Algorithmus in C ist ebenfalls vorhanden.
+            Die Implementierung ist in der Datei <a href="./../../development/c/bresenham.c">bresenham.c</a> zu finden.
+            Hierfür wurden lodepng und cmake benutzt.
+            Die Performance des C-Programms ist mit der des Golang-Programms verglichen worden.
+            Die C Implementierung ist mit der Code-Optimierungs-Option -O3 etwas effizienter als die Golang-Implementierung,
+            was zum Teil auf den Array-Zugriff zurückzuführen ist.
+            Ohne die Code-Optimierungs-Option ist die Golang-Implementierung jedoch deutlich effizienter.
+        </p>
+
+        <h5>Shift</h5>
+        <p class="section-description">
+            Die Multiplikation mit 2 kann durch eine effizientere Bit-Shift-Operation ersetzt werden:
+            <pre>
+                <code>
+                    dx := x1 - x0
+                    dy := y1 - y0
+                    dy2 := dy << 1
+                    dx2 := dx << 1
+                </code>
+            </pre>
+        </p>
+
+        <h5>Start und Endpunkt</h5>
+        <p class="section-description">
+            Die Fälle für den Start- und Endpunkt können aus der Schleife herausgezogen werden, wodurch ein wenig Performance gewonnen wird::
+            <pre>
+                <code>
+                    img.Set(x1, y0, c)
+                    img.Set(x1, y1, c)
+                    x0++
+
+                    if x0 > x1 {
+                        x0, x1 = x1, x0
+                        y0, y1 = y1, y0
+                    }
+                </code>
+            </pre>
+        </p>
+
+        <h5>Index</h5>
+        <p class="section-description">
+            Statt über die x-Koordinate zu iterieren, kann auch effizienter über Index zum Zugriff auf das Bild iteriert werden:
+            <pre>
+                <code>
+                    i := img.W*y0 + x0
+                    end := img.W*y1 + x1
+                    
+                    for i < end {
+                        i++
+                        if E > 0 {
+                            i+= img.W
+                        }
+                    }
+                </code>
+            </pre>
+        </p>
+
+        <h5>Branchless</h5>
+        <p class="section-description">
+            Die Verzweigung in der Schleife des Integer-Bresenham-Algorithmus kann durch eine effizientere branchless Implementierung ersetzt werden.
+            Hierbei wird E negiert gespeichert. Wenn der Wert negativ ist ist das letzte Bit gesetzt. Die wird dann für die Variable b benutzt, die entweder 1 ist, wenn 
+            E negativ ist, und somit der eigentliche Fehlerwert \(E > 0\) war oder 0 ist, wenn E nicht negativ ist, und somit der eigentliche Fehlerwert \(E \leq 0\) war.
+            Durch Multiplikation kann dann der Index passend erhöht werden und e passend angepasst werden:
+            <pre>
+                <code>
+                    b := int(uint64(e) >> 63)
+                    i += 1 + img.W*b
+                    e += dx2 * b - dy2
+                </code>
+            </pre>
+        </p>
+
+        <h5>GCD</h5>
+        <p class="section-description">
+            Einige Linien können durch die Verwendung des größten gemeinsamen Teilers der Differenzen der Start- und Endpunkte optimiert werden.
+            So besteht eine rasterisierte Linie aus sich wiederholenden Elementen, wenn der größte gemeinsame Teiler der Differenzen der Start- und Endpunkte größer als 1 ist.
+            So muss nur über ein Stück iteriert werden, und die Elemente werden dann entsprechend vervielfacht.
+            Unterschiedliche Implementierungen sind hier möglich.
+            Meine Implementierung zeichnet alle Stücke parallel indem für jeden gezeichneten Pixel mit bestimmtem Versatz der Pixel im anderen Stück gezeichnet wird.
+            Diese Implementierung bringt eine deutliche Effizienzsteigerung, die jedoch von den zu zeichnenden Linien abhängt.
+            Die Länge der zu zeichnenden Linie ist hierbei relevant. Sowie auch die Höhe des größten gemeinsamen Teilers. Am 
+            meisten profitieren Linien mit einen größeren, jedoch nicht zu großem größten gemeinsamen Teiler.
+            <div class="row" style="width: 100%;">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <img class="u-max-full-width" src="images/gcd.gif" style="width: 100%; transform: scaleY(-1); image-rendering: pixelated;">
+                </div>
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <p> Schrittweise Rasterisierung mit GCD Optimierung (Quelle: Eigene Implementierung)</p>
+                </div>
+            </div>
+        </p>
+
+        <h5>Spiegelung / Zweiseitige Iteration</h5>
+        <p class="section-description">
+            Weiterhin kann der Algorithmus Optimiert werden, wenn statt nur den Index i zu erhöhen, auch der Index end entsprechend verringert wird.
+            Hierbei ist zu beobachten, dass der Fehlerwert \(E\) für beide Richtungen gültig ist, sodass wenn \(E > 0\)  ist, der Index i um 1+img.W erhöht wird und end um 1 verringert wird.
+            Wenn \(E < 0\)  ist, wird der Index i nur um 1 erhöht und end wird dafür um 1+img.W verringert. Bei \(E = 0\) ist jedoch aufzupassen, da hier der Index i um 1 erhöht wird, jedoch end um 1+img.W verringert wird.
+            Ein img.W ist hierbei ein y-Schritt, 1 ist ein x-Schritt (siehe Index oben). So können immer 2 Pixel gezeichnet werden und somit werden nur die Hälfte der Iterationen benötigt, wobei aber auch
+            mehr in einer Iteration berechnet wird. Diese Implementierung brachte jedoch auf meinem System eine deutliche Effizienzsteigerung. Dies ist
+            zu Teilen damit zu erklären, dass weniger Zeit verschwendet wird, in der auf das Ergebnis von Befehlen gewartet wird, da mehr unabhängige Variablen in
+            einer Iteration berechnet werden. Dieser Ansatz kann wie im Bild gezeigt auch mit der GCD-Optimierung kombiniert werden.
+            <div class="row" style="width: 100%;">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <img class="u-max-full-width" src="images/gcd-mirror.gif" style="width: 100%; transform: scaleY(-1); image-rendering: pixelated;">
+                </div>
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <p> Schrittweise Rasterisierung mit GCD Optimierung und Spiegelung / zweiseitiger Iteration (Quelle: Eigene Implementierung)</p>
+                </div>
+            </div>
+        </p>
+
+        <h5>Bitset</h5>
+        <p class="section-description">
+            Ebenfalls wurde die Verwendung eines Bit-Sets getestet. Hierbei wurde es verwendet, um zu speichern ob die Line einen Schritt nach oben macht oder nicht und dann nach dem Bresenham-Algorithmus alle Pixel hintereinander weg zu zeichnen. Diese Implementierung war etwas weniger effizient, als die bereit gezeigten.
+            Beispiel-Bit-Set für ein GCD-Segment der oberen Test-Linie: <code>00100010001000100</code>.
+        </p>
+
+        <h5>Spezialfälle</h5>
+        Einfache Spezialfälle von Linien können durch spezielle Implementierungen optimiert werden.
+        So kann eine horizontale oder vertikale Linie durch einfaches Setzen der Pixel gezeichnet werden.
+        Auch Linien mit einer Steigung von 1 oder -1 können trivial gezeichnet werden.
+
+    </div>
+
+    <div class="docs-section" id="results">
+        
+        <h3 class="section-heading">Ergebnisse</h3>
+        <p class="section-description">
+            Die Ergebnisse der Implementierung des Bresenham-Algorithmus werden hier durch einen Benchmark der 4 Algorithmen präsentiert:
+        </p>
+        <div class="row" style="width: 100%;">
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <img class="u-max-full-width" src="images/Bild4.png" style="width: 100%; image-rendering: pixelated;">
+            </div>
+            <div style="display: flex; justify-content: center; width: 100%;">
+                <p> Visualisierung der Laufzeiten der 4 Algorithmen (Quelle: Daten aus eigener Implementierung, Eigene Grafik auf PowerPoint)</p>
+            </div>
+        </div>
+
     </div>
 
 </div>
+</body>
 
