@@ -1,0 +1,3 @@
+C:/Users/nikla/Desktop/lines/cgs-ba-ws23-rasterization/development/c/cmake-build-debug/CMakeFiles/c.dir
+C:/Users/nikla/Desktop/lines/cgs-ba-ws23-rasterization/development/c/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/nikla/Desktop/lines/cgs-ba-ws23-rasterization/development/c/cmake-build-debug/CMakeFiles/rebuild_cache.dir

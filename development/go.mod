@@ -2,4 +2,4 @@ module development
 
 go 1.21
 
-require github.com/alasdairforsythe/branchless v0.0.0-20230629051907-19da385d3bc2
+require github.com/bits-and-blooms/bitset v1.13.0

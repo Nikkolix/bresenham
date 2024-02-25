@@ -1,2 +1,2 @@
-github.com/alasdairforsythe/branchless v0.0.0-20230629051907-19da385d3bc2 h1:TUkZGCM8ArxNe5nwtbWFptb8HbaP+ltJOp5Xq9iCZng=
-github.com/alasdairforsythe/branchless v0.0.0-20230629051907-19da385d3bc2/go.mod h1:5ZgyxDsL9OJARQaxaKcHuwqE9QDmjL3YuvaJjrmCnx8=
+github.com/bits-and-blooms/bitset v1.13.0 h1:bAQ9OPNFYbGHV6Nez0tmNI0RiEu7/hxlYJRUA0wFAVE=
+github.com/bits-and-blooms/bitset v1.13.0/go.mod h1:7hO7Gc7Pp1vODcmWvKMRA9BNmbv6a/7QIWpPxHddWR8=
