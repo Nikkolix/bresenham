@@ -1,1 +1,3 @@
-Your project website is available at http://cybertron.cg.tu-berlin.de/p/cgs-ba-ws23/rasterization. All files inside of your documentation/website folder are mirrored whenever you push something to this folder in your repository. Thus, do not move or rename this folder.
+# Project Overview
+
+<https://html-preview.github.io/?url=https://github.com/Nikkolix/bresenham/blob/master/documentation/website/index.html>
